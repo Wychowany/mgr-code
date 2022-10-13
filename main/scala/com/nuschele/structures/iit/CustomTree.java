@@ -1,4 +1,4 @@
-package com.nuschele.structures.dropright;
+package com.nuschele.structures.iit;
 
 import org.biodatageeks.sequila.rangejoins.methods.base.BaseIntervalHolder;
 import org.biodatageeks.sequila.rangejoins.methods.base.BaseNode;
@@ -114,44 +114,32 @@ public class CustomTree<V> implements BaseIntervalHolder<V> {
         }
         private int nextOverlap() {
             int currentNodeIndex = qNext;
-            int opCounter = 0;
             boolean finishedRight = false;
             while (true) {
                 // we're on left, after processing right side
                 if (currentNodeIndex < firstOverlap) {
                     if ((currentNodeIndex == firstOverlap-1) && finishedRight) {
                         currentNodeIndex++;
-                        opCounter++;
                     }
                     while (stillPossibleOnLeftOverlap(currentNodeIndex)) {
                         currentNodeIndex--;
-                        opCounter++;
                         if (intervals.get(currentNodeIndex).overlaps(qStart, qEnd)) {
-                            if (currentNodeIndex != -1) {
-                                intervals.get(currentNodeIndex).operations = opCounter;
-                            }
                             return currentNodeIndex;
                         }
                     }
                     return -1;
                 } else {
                     currentNodeIndex++;
-                    opCounter++;
                     if (!isImaginary(currentNodeIndex)) {
                         if (intervals.get(currentNodeIndex).overlaps(qStart, qEnd)) {
-                            if (currentNodeIndex != -1) {
-                                intervals.get(currentNodeIndex).operations = opCounter;
-                            }
                             return currentNodeIndex;
                         }
                         if (!stillPossibleOnRightOverlap(currentNodeIndex)) {
                             currentNodeIndex = firstOverlap - 1;
-                            opCounter++;
                             finishedRight = true;
                         }
                     } else {
                         currentNodeIndex = firstOverlap - 1;
-                        opCounter++;
                         finishedRight = true;
                     }
                 }
@@ -172,7 +160,6 @@ public class CustomTree<V> implements BaseIntervalHolder<V> {
         }
 
         private int firstOverlap(int from, int fromLevel) {
-            int opCounter = 0;
             int nodeIndex = from;
             int result = -1;
             if (intervals.get(nodeIndex).max < qStart) {
@@ -182,7 +169,6 @@ public class CustomTree<V> implements BaseIntervalHolder<V> {
                 if (intervals.get(nodeIndex).overlaps(qStart, qEnd)) {
                     return nodeIndex;
                 } else {
-                    opCounter++;
                     int left = TreeOperations.left(nodeIndex, fromLevel);
                     if (left != -1 && intervals.get(left).max >= qStart) {
                         nodeIndex = left;
@@ -191,7 +177,6 @@ public class CustomTree<V> implements BaseIntervalHolder<V> {
                         if (intervals.get(nodeIndex).getStart() > qEnd) {
                             break;
                         }
-                        opCounter++;
                         nodeIndex = TreeOperations.right(nodeIndex, fromLevel);
                         fromLevel--;
 
@@ -200,7 +185,6 @@ public class CustomTree<V> implements BaseIntervalHolder<V> {
                         }
 
                         while (isImaginary(nodeIndex)) {
-                            opCounter++;
                             nodeIndex = TreeOperations.left(nodeIndex, fromLevel);
                             fromLevel--;
                         }
@@ -211,9 +195,6 @@ public class CustomTree<V> implements BaseIntervalHolder<V> {
                     }
                 }
             }
-            if (result != -1) {
-                intervals.get(result).operations = opCounter;
-            }
             return result;
         }
 
@@ -222,7 +203,6 @@ public class CustomTree<V> implements BaseIntervalHolder<V> {
     public static class CustomNode<V> extends BaseNode<V> {
         private int start;
         private int end;
-        private int operations=0;
 
         int leftMaxEnd = 0;
 
@@ -237,11 +217,6 @@ public class CustomTree<V> implements BaseIntervalHolder<V> {
         @Override
         public int getEnd() {
             return end;
-        }
-
-        @Override
-        public long operations() {
-            return operations;
         }
 
         @Override

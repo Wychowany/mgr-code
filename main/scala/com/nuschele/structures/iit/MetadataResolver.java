@@ -1,4 +1,4 @@
-package com.nuschele.structures.dropright;
+package com.nuschele.structures.iit;
 
 public class MetadataResolver {
 	public static TreeMetadata resolveMetadata(final int numberOfElems) {
