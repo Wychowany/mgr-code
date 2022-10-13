@@ -105,8 +105,8 @@ for fraction in fractions:
                 worksheet.write_number(broadcastCols[run - 1] + str(row), int(broadcastTime))
                 broadcastSum += int(broadcastTime)
                 count = lines[buildTimeLineIndex + 6].split("|")[1]
-                # appResult = requests.get('http://localhost:18080/api/v1/applications/{}'.format(appId)).json()
-                # worksheet.write_number(joinDurationCols[run - 1] + str(row), int(appResult['attempts'][0]['duration']))
+                appResult = requests.get('http://localhost:18080/api/v1/applications/{}'.format(appId)).json()
+                worksheet.write_number(joinDurationCols[run - 1] + str(row), int(appResult['attempts'][0]['duration']))
                 joinDur = int(lines[buildTimeLineIndex + 9].split(' ')[2])
                 joinDurSum += joinDur
                 worksheet.write_number(joinDurationCols[run - 1] + str(row), joinDur)
